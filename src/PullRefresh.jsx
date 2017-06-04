@@ -9,7 +9,9 @@
 import React, { Component, PropTypes } from 'react';
 import classnames from 'classnames';
 
-import { getScrollEventTarget, getScrollTop } from './utils';
+import {
+  getScrollEventTarget, getScrollTop, checkBottomReached, getComputedHeight,
+} from './utils';
 
 import './index.scss';
 
@@ -19,10 +21,16 @@ class PullRefresh extends Component {
     topPullText: PropTypes.string,
     topDropText: PropTypes.string,
     topLoadingText: PropTypes.string,
+    bottomPullText: PropTypes.string,
+    bottomDropText: PropTypes.string,
+    bottomLoadingText: PropTypes.string,
     topLoad: PropTypes.bool,
+    bottomLoad: PropTypes.bool,
     topLoadDistance: PropTypes.number,
+    bottomLoadDistance: PropTypes.number,
     distanceIndex: PropTypes.number,
     onTopLoad: PropTypes.func,
+    onBottomLoad: PropTypes.func,
     children: PropTypes.func,
   }
   static defaultProps = {
@@ -30,8 +38,12 @@ class PullRefresh extends Component {
     topPullText: '↓ 下拉',
     topDropText: '↑ 释放',
     topLoadingText: 'loading...',
+    bottomPullText: '↑ 上拉',
+    bottomDropText: '↓ 释放',
+    bottomLoadingText: 'loading...',
     topLoad: false,
     topLoadDistance: 70,
+    bottomLoadDistance: 70,
     distanceIndex: 2,
     onTopLoad: null,
   }
@@ -40,6 +52,8 @@ class PullRefresh extends Component {
     this.contentEle = null;
     this.scrollEventTarget = null;
     this.topDropped = false;
+    this.bottomDropped = false;
+    this.bottomReached = false;
     this.direction = '';
     this.startY = 0;
     this.clientY = 0;
@@ -47,7 +61,9 @@ class PullRefresh extends Component {
     this.state = {
       translate: 0,
       topStatus: 'pull',
+      bottomStatus: 'pull',
       topText: this.props.topPullText,
+      bottomText: this.props.bottomPullText,
     };
     this.events = {
       onContentTouchStart: this.onContentTouchStart.bind(this),
@@ -72,18 +88,19 @@ class PullRefresh extends Component {
         <div
           ref={(r) => { this.contentEle = r; }}
           className="milkui-pullrefresh__content"
-          style={{ transform: `translate3d(0, ${this.getComputedHeight(translate)}px, 0)` }}
+          style={{ transform: `translate3d(0, ${getComputedHeight(translate, this.dpr)}px, 0)` }}
           onTouchStart={this.events.onContentTouchStart}
           onTouchMove={this.events.onContentTouchMove}
           onTouchEnd={this.events.onContentTouchEnd}
         >{children}</div>
+        {this.renderBottomLoader()}
       </div>
     );
   }
 
   renderTopLoader() {
     const { topText, translate } = this.state;
-    const height = this.getComputedHeight(translate);
+    const height = getComputedHeight(translate, this.dpr);
     return (
       <div className="milkui-pullrefresh__top" style={{ height: `${height}px` }}>
         <span className="milkui-pullrefresh__loader__text">{topText}</span>
@@ -91,50 +108,57 @@ class PullRefresh extends Component {
     );
   }
 
-  getComputedHeight(height) {
-    return height * this.dpr;
+  renderBottomLoader() {
+    const { bottomText, translate } = this.state;
+    const height = Math.abs(getComputedHeight(translate, this.dpr));
+    return (
+      <div className="milkui-pullrefresh__bottom" style={{ height: `${height}px` }}>
+        <span className="milkui-pullrefresh__loader__text">{bottomText}</span>
+      </div>
+    );
   }
 
   onContentTouchStart(e) {
-    console.info('=== onContentTouchStart ===');
-    const { topStatus } = this.state;
-    const { topPullText } = this.props;
+    const { topStatus, bottomStatus } = this.state;
+    const { topPullText, bottomPullText } = this.props;
     this.startY = e.touches[0].clientY;
     this.startScrollTop = getScrollTop(this.scrollEventTarget);
-    if (
-      topStatus !== 'loading' &&
-      this.startScrollTop === 0
-    ) {
+    // handle top pull refresh
+    if (topStatus !== 'loading') {
       this.topDropped = false;
       this.setState({
         topStatus: 'pull',
         topText: topPullText,
       });
     }
+    // handle bottom pull refresh
+    this.bottomReached = false;
+    if (bottomStatus !== 'loading') {
+      this.bottomDropped = false;
+      this.setState({
+        bottomStatus: 'pull',
+        bottomText: bottomPullText,
+      });
+    }
   }
 
   onContentTouchMove(e) {
-    console.info('=== onContentTouchMove ===');
     if (
       this.startY < this.contentEle.getBoundingClientRect().top &&
       this.startY > this.contentEle.getBoundingClientRect().bottom
     ) {
       return;
     }
-    console.info('=== this.startY ===', this.startY);
-    console.info('=== this.contentEle.top ===', this.contentEle.getBoundingClientRect().top);
-    console.info('=== this.contentEle.bottom ===', this.contentEle.getBoundingClientRect().bottom);
-    console.info('=== onContentTouchMove not return ===');
 
-    const { topStatus } = this.state;
+    const { topStatus, bottomStatus } = this.state;
     const {
       distanceIndex, topLoad, onTopLoad, topLoadDistance, topDropText, topPullText,
+      bottomLoad, onBottomLoad, bottomLoadDistance, bottomDropText, bottomPullText,
     } = this.props;
     this.currentY = e.touches[0].clientY;
     const distance = (this.currentY - this.startY) / distanceIndex;
     this.direction = distance > 0 ? 'down' : 'up';
-    console.info('=== this.currentY ===', this.currentY);
-    console.info('=== getScrollTop(this.scrollEventTarget) ===', getScrollTop(this.scrollEventTarget));
+    // handle top pull refresh
     if (
       topLoad &&
       typeof onTopLoad === 'function' &&
@@ -142,7 +166,6 @@ class PullRefresh extends Component {
       this.direction === 'down' &&
       topStatus !== 'loading'
     ) {
-      console.info('=== onContentTouchMove pullrefresh ===');
       e.preventDefault();
       e.stopPropagation();
       let translate = distance - this.startScrollTop;
@@ -155,18 +178,47 @@ class PullRefresh extends Component {
         topText: translate >= topLoadDistance ? topDropText : topPullText,
       });
     }
+    // handler bottom pull refresh
+    if (this.direction === 'up') {
+      this.bottomReached = this.bottomReached ||
+        checkBottomReached(this.scrollEventTarget, this.contentEle);
+    }
+    if (
+      bottomLoad &&
+      typeof onBottomLoad === 'function' &&
+      this.bottomStatus !== 'loading' &&
+      this.direction === 'up' &&
+      this.bottomReached
+    ) {
+      e.preventDefault();
+      e.stopPropagation();
+      let translate = (getScrollTop(this.scrollEventTarget) - this.startScrollTop) + distance;
+      if (translate > 0) {
+        translate = 0;
+      }
+      const status = -translate >= bottomLoadDistance ? 'drop' : 'pull';
+      const text = bottomStatus === 'drop' ? bottomDropText : bottomPullText;
+      console.info('=== status ===', status);
+      this.setState({
+        translate,
+        bottomStatus: status,
+        bottomText: text,
+      });
+    }
   }
 
   onContentTouchEnd() {
-    console.info('=== onContentTouchEnd ===');
-    const { translate, topStatus } = this.state;
-    const { topLoadingText, topPullText, onTopLoad } = this.props;
+    const { translate, topStatus, bottomStatus } = this.state;
+    const {
+      topLoadingText, topPullText, onTopLoad,
+      bottomLoadingText, bottomPullText, onBottomLoad,
+    } = this.props;
+    // handle top pull refresh
     if (
       this.direction === 'down' &&
       getScrollTop(this.scrollEventTarget) === 0 &&
       translate > 0
     ) {
-      console.info('=== onContentTouchEnd pullrefresh ===');
       this.topDropped = true;
       if (topStatus === 'drop') {
         this.setState({
@@ -174,12 +226,41 @@ class PullRefresh extends Component {
           topStatus: 'loading',
           topText: topLoadingText,
         });
-        onTopLoad();
+        onTopLoad();  // run onTopLoad function
       } else {
         this.setState({
           translate: 0,
           topStatus: 'pull',
           topText: topPullText,
+        });
+      }
+    }
+    // handle bottom pull refresh
+    console.info('=== this.direction ===', this.direction);
+    console.info('=== this.bottomReached ===', this.bottomReached);
+    console.info('=== translate ===', translate);
+    if (
+      this.direction === 'up' &&
+      this.bottomReached &&
+      translate < 0
+    ) {
+      this.bottomDropped = true;
+      this.bottomReached = false;
+      console.info('=== bottomStatus ===', bottomStatus);
+      if (bottomStatus === 'drop') {
+        console.info('=== bottomStatus drop ===');
+        this.setState({
+          translate: -30,
+          bottomStatus: 'loading',
+          bottomText: bottomLoadingText,
+        });
+        onBottomLoad();  // run onBottomLoad function
+      } else {
+        console.info('=== bottomStatus pull ===');
+        this.setState({
+          translate: 0,
+          bottomStatus: 'pull',
+          bottomText: bottomPullText,
         });
       }
     }
@@ -191,6 +272,15 @@ class PullRefresh extends Component {
       translate: 0,
       topStatus: 'pull',
       topText: topPullText,
+    });
+  }
+
+  onBottomLoaded() {
+    const { bottomPullText } = this.props;
+    this.setState({
+      translate: 0,
+      bottomStatus: 'pull',
+      bottomText: bottomPullText,
     });
   }
 }

@@ -8,14 +8,26 @@
 $font-size-base: 28px;
 
 .milkui-pullrefresh {
+  position: relative;
   font-size: $font-size-base;
   color: #666;
 }
 
-.milkui-pullrefresh__top {
+.milkui-pullrefresh__top, .milkui-pullrefresh__bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
   display: flex;
   justify-content: center;
-  align-items: flex-end;
+  align-items: center;
   height: 0;
   overflow: hidden;
+}
+
+.milkui-pullrefresh__top {
+  top: 0;
+}
+
+.milkui-pullrefresh__bottom {
+  bottom: 0;
 }

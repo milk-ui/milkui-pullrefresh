@@ -19,13 +19,20 @@ import PullRefresh from 'milkui-pullrefresh';
 | Properties | Type | Description | Default |
 | -- | -- | -- | -- |
 | className | String | 自定义的 class 类名 | '' |
-| topPullText | String | 顶部下拉时的文字提示 | '下拉刷新' |
-| topDropText | String | 顶部下拉后可以刷新时的文字提示 | '释放更新' |
-| topLoadingText | String | 顶部下拉更新时的文字提示 | '加载中...' |
+| topPullText | String | 顶部下拉时的文字提示 | '↓ 下拉' |
+| topDropText | String | 顶部下拉后可以刷新时的文字提示 | '↑ 释放' |
+| topLoadingText | String | 顶部下拉更新时的文字提示 | 'loading...' |
+| bottomPullText | String | 底部上拉时的文字提示 | '↑ 上拉' |
+| bottomDropText | String | 底部上拉后可以刷新时的文字提示 | '↓ 释放' |
+| bottomLoadingText | String | 底部上拉更新时的文字提示 | 'loading...' |
 | distanceIndex | Number | 手指移动与组件移动距离的比值 | 2 |
 | topLoadDistance | Number | 顶部下拉更新的阈值 | 70 |
+| bottomLoadDistance | Number | 底部下拉更新的阈值 | 70 |
 | topLoad | Boolean | 顶部下拉更新 | false |
+| bottomLoad | Boolean | 底部下拉更新 | false |
 | onTopLoad | Function | 顶部下拉更新时的回调函数 |  |
+| onBottomLoad | Function | 底部下拉更新时的回调函数 |  |
+
 
 ## 开发
 

@@ -23,3 +23,18 @@ export function getScrollTop(element) {
   }
   return element.scrollTop;
 }
+
+export function getComputedHeight(height, dpr) {
+  return height * dpr;
+}
+
+// https://github.com/ElemeFE/mint-ui/blob/master/packages/loadmore/src/loadmore.vue#L258
+export function checkBottomReached(scrollEventTarget, contentEle) {
+  if (scrollEventTarget === window) {
+    return document.body.scrollTop +
+      document.documentElement.clientHeight >=
+      document.body.scrollHeight;
+  }
+  return contentEle.getBoundingClientRect().bottom <=
+    scrollEventTarget.getBoundingClientRect().bottom + 1;
+}
