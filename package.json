@@ -1,0 +1,33 @@
+{
+  "name": "milkui-pullrefresh",
+  "version": "0.1.0",
+  "description": "milk ui component for build mobile web app",
+  "repository": "https://github.com/milk-ui/milkui-pullrefresh",
+  "author": "caiyongmin",
+  "main": "build/bundle.js",
+  "scripts": {
+    "start": "milk-dev run start",
+    "build": "milk-dev run build",
+    "pub": "milk-dev run publish"
+  },
+  "files": [
+    "build",
+    "src",
+    "README.md"
+  ],
+  "keywords": [
+    "milk",
+    "react",
+    "mobile",
+    "ui",
+    "component"
+  ],
+  "dependencies": {
+    "classnames": "~2.2.3",
+    "fastclick": "~1.0.6",
+    "react": "~15.4.2",
+    "react-dom": "~15.4.2"
+  },
+  "license": "MIT",
+  "devDependencies": {}
+}

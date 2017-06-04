@@ -1,0 +1,21 @@
+/**
+ * Pullrefresh of milkui-component
+ * @author caiyongmin
+ *
+ * Copyright 2017-2019, All rights reserved.
+ */
+
+$font-size-base: 28px;
+
+.milkui-pullrefresh {
+  font-size: $font-size-base;
+  color: #666;
+}
+
+.milkui-pullrefresh__top {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  height: 0;
+  overflow: hidden;
+}

@@ -1,0 +1,46 @@
+/**
+ * PullRefresh of milkui-component
+ * @author caiyongmin
+ *
+ * Copyright 2017-2019, All rights reserved.
+ */
+
+$font-size-base: 28px;
+$border-color-base: #eee;
+
+.demo-panel {
+  padding: 0 25px;
+}
+
+.demo-title {
+  margin-top: 20px;
+  font-size: 60px;
+}
+
+.demo-description {
+  margin-top: 15px;
+  font-size: 26px;
+  color: #3b3b3b;
+}
+
+.demo-item {
+  margin-top: 20px;
+}
+
+.demo-item-description {
+  font-size: $font-size-base;
+  text-align: center;
+  color: #999;
+}
+
+.demo-pullrefresh-list {
+  font-size: $font-size-base;
+}
+
+.demo-pullrefresh-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 95px;
+  border-top: 1PX solid $border-color-base;
+}
