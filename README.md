@@ -1,22 +1,67 @@
 # milkui-pullrefresh
 
-组件描述
+> 下拉/上拉刷新
 
-## 效果图
+## Overview
 
-...some images
+![image](https://user-images.githubusercontent.com/11053605/28750727-e5636c58-7525-11e7-9c7f-7f3e9ed08dc5.png)
 
-## 使用
+## Example
 
 ```js
 import PullRefresh from 'milkui-pullrefresh';
 
-<PullRefresh></PullRefresh>
+<PullRefresh
+  ref={(f) => { this.pullRefresh = f; }}
+  topLoad
+  onTopLoad={this.events.loadTopData}
+  distanceIndex={3}
+  bottomLoad
+  onBottomLoad={this.events.loadBottomData}
+>
+  <div className="demo__pullrefresh__list">
+    {list.map((item) =>
+      <div key={item} className="demo__pullrefresh__item">{item}</div>
+    )}
+  </div>
+</PullRefresh>
+
+// mock loadTopData
+loadTopData() {
+  const me = this;
+  const { list } = me.state;
+  let newList = Array.from(list);
+  const firstItem = newList[0];
+  for (let i = 1; i < 11; i++) {
+    newList = [firstItem - i, ...newList];
+  }
+  setTimeout(() => {
+    me.setState({ list: newList }, () => {
+      me.pullRefresh.onTopLoaded();
+    });
+  }, 2000);
+}
+
+// mock loadBottomData
+loadBottomData() {
+  const me = this;
+  const { list } = me.state;
+  let newList = Array.from(list);
+  const lastItem = newList[newList.length - 1];
+  for (let i = 1; i < 11; i++) {
+    newList = [...newList, lastItem + i];
+  }
+  setTimeout(() => {
+    me.setState({ list: newList }, () => {
+      me.pullRefresh.onBottomLoaded();
+    });
+  }, 2000);
+}
 ```
 
-## 参数
+## Properties
 
-| Properties | Type | Description | Default |
+| Property | Type | Description | Default |
 | -- | -- | -- | -- |
 | className | String | 自定义的 class 类名 | '' |
 | topPullText | String | 顶部下拉时的文字提示 | '↓ 下拉' |
@@ -34,16 +79,16 @@ import PullRefresh from 'milkui-pullrefresh';
 | onBottomLoad | Function | 底部下拉更新时的回调函数 |  |
 
 
-## 开发
-
-### install
+## Develop
 
 ```bash
-cnpm i milk-dev -g    # 组件开发工具
+cnpm i milk-dev -g    # dev tool
+
 cnpm install
+
 npm start
 ```
 
-## 链接
+## Links
 
 - [Issues](https://github.com/milk-ui/milkui-pullrefresh/issues)
