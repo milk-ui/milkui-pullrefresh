@@ -26,14 +26,14 @@ class Demo extends Component {
     const { list } = this.state;
 
     return (
-      <div className="demo-panel">
-        <div className="demo-title">PullRefresh</div>
-        <div className="demo-description">
-          This is a demo page, enjoy it! 😀 ✌️
+      <div className="demo__panel">
+        <div className="demo__title">PullRefresh</div>
+        <div className="demo__description">
+          This is a demo page, enjoy it! ✌️
         </div>
-        <div className="demo-item">
-          <p className="demo-item-description">请在手机上查看</p>
-          <p className="demo-item-description">在列表顶端, 按住 - 下拉 - 释放获取更多数据</p>
+        <div className="demo__item">
+          <p className="demo__item__description">请在手机上查看</p>
+          <p className="demo__item__description">在列表顶端, 按住 - 下拉 - 释放获取更多数据</p>
           <PullRefresh
             ref={(f) => { this.pullRefresh = f; }}
             topLoad
@@ -42,13 +42,13 @@ class Demo extends Component {
             bottomLoad
             onBottomLoad={this.events.loadBottomData}
           >
-            <div className="demo-pullrefresh-list">
+            <div className="demo__pullrefresh__list">
               {list.map((item) =>
-                <div key={item} className="demo-pullrefresh-item">{item}</div>
+                <div key={item} className="demo__pullrefresh__item">{item}</div>
               )}
             </div>
           </PullRefresh>
-          <p className="demo-item-description">在列表底端, 按住 - 上拉 - 释放获取更多数据</p>
+          <p className="demo__item__description">在列表底端, 按住 - 上拉 - 释放获取更多数据</p>
         </div>
       </div>
     );
@@ -64,7 +64,6 @@ class Demo extends Component {
     }
     setTimeout(() => {
       me.setState({ list: newList }, () => {
-        console.info('=== topLoadData ===');
         me.pullRefresh.onTopLoaded();
       });
     }, 2000);
@@ -80,7 +79,6 @@ class Demo extends Component {
     }
     setTimeout(() => {
       me.setState({ list: newList }, () => {
-        console.info('=== bottomLoadData ===');
         me.pullRefresh.onBottomLoaded();
       });
     }, 2000);

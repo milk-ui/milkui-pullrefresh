@@ -8,36 +8,36 @@
 $font-size-base: 28px;
 $border-color-base: #eee;
 
-.demo-panel {
+.demo__panel {
   padding: 0 25px;
 }
 
-.demo-title {
+.demo__title {
   margin-top: 20px;
   font-size: 60px;
 }
 
-.demo-description {
+.demo__description {
   margin-top: 15px;
   font-size: 26px;
   color: #3b3b3b;
 }
 
-.demo-item {
+.demo__item {
   margin-top: 20px;
 }
 
-.demo-item-description {
+.demo__item__description {
   font-size: $font-size-base;
   text-align: center;
   color: #999;
 }
 
-.demo-pullrefresh-list {
+.demo__pullrefresh__list {
   font-size: $font-size-base;
 }
 
-.demo-pullrefresh-item {
+.demo__pullrefresh__item {
   display: flex;
   justify-content: center;
   align-items: center;
